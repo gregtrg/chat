@@ -20,4 +20,8 @@ repositories {
 }
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-websocket"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
 }
