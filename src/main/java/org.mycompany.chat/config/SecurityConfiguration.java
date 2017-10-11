@@ -31,13 +31,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
 
+    private final UserDetailsService userDetailsService;
+
 
     @PostConstruct
     public void authenticationManagerBuilder() {
         try {
             authenticationManagerBuilder
-                    .userDetailsService(userDetailsService());
-            //.passwordEncoder(passwordEncoder());
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
         } catch (Exception e) {
             throw new BeanInitializationException("Security configuration failed", e);
         }
@@ -81,10 +83,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
 
-    @Bean
+    //@Bean
     public UserDetailsService userDetailsService() {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user").password("password").roles("USER").build());
+        manager.createUser(User.withUsername("author").password("password").roles("USER").build());
         manager.createUser(User.withUsername("admin").password("password").roles("USER", "ADMIN").build());
         return manager;
     }

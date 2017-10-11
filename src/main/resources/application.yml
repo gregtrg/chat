@@ -3,5 +3,25 @@ server:
 spring:
     application:
         name: chat
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        show-sql: true
+        naming:
+            physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+            implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        properties:
+            hibernate.id.new_generator_mappings: true
+            hibernate.hbm2ddl.auto: create
+            hibernate.cache.use_second_level_cache: true
+            hibernate.cache.use_query_cache: false
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:postgresql://localhost:5432/chat
+        driver-class-name: org.postgresql.Driver
+        username: postgres
+        password: 12345
+        hikari:
+            maximum-pool-size: 10
+            connection-timeout: 60000
     jackson:
         serialization.write_dates_as_timestamps: false

@@ -8,17 +8,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.mycompany.chat.domain.Author;
+import org.mycompany.chat.domain.Authority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
+    private static final String USER_ID = "userId";
 
     private String secretKey;
 
@@ -33,56 +34,58 @@ public class TokenProvider {
 
     private long tokenValidityInMillisecondsForRememberMe;
 
-    public TokenProvider() {}
+    public TokenProvider() {
+    }
 
     @PostConstruct
     public void init() {
         this.secretKey = "uBaf7ZQtnU8Ny6L2bzul";
 
         this.tokenValidityInMilliseconds =
-           1_800_000 ;
+            1_800_000;
         this.tokenValidityInMillisecondsForRememberMe =
             1_800_000;
     }
 
-    public String createToken(Authentication authentication, Boolean rememberMe) {
-        String authorities = authentication.getAuthorities().stream()
+    public String createToken(Author author) {
+        String authorities = author.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity;
-        if (rememberMe) {
-            validity = new Date(now + this.tokenValidityInMillisecondsForRememberMe);
-        } else {
-            validity = new Date(now + this.tokenValidityInMilliseconds);
-        }
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
+        Claims claims = Jwts.claims().setSubject(author.getUsername());
+        claims.put(USER_ID, author.getId() + "");
+        claims.put(AUTHORITIES_KEY, authorities);
         return Jwts.builder()
-            .setSubject(authentication.getName())
-            .claim(AUTHORITIES_KEY, authorities)
+            .setSubject(author.getUsername())
+            .setClaims(claims)
             .signWith(SignatureAlgorithm.HS512, secretKey)
             .setExpiration(validity)
             .compact();
     }
 
-    public Authentication getAuthentication(String token) {
+    Authentication getAuthentication(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
             .parseClaimsJws(token)
             .getBody();
 
-        Collection<? extends GrantedAuthority> authorities =
-            Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        Set<Authority> authorities = Arrays.stream(((String) claims.get(AUTHORITIES_KEY)).split(","))
+            .map(Authority::new)
+            .collect(Collectors.toSet());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        Author user = Author.builder()
+            .username(claims.getSubject())
+            .authorities(authorities)
+            .id(Long.parseLong((String) claims.get(USER_ID)))
+            .build();
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        return new UsernamePasswordAuthenticationToken(user, token, authorities);
     }
 
-    public boolean validateToken(String authToken) {
+    boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken);
             return true;
