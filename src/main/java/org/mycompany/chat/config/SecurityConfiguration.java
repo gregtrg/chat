@@ -2,7 +2,6 @@ package org.mycompany.chat.config;
 
 import lombok.AllArgsConstructor;
 import org.mycompany.chat.security.jwt.JWTConfigurer;
-import org.mycompany.chat.security.jwt.JWTFilter;
 import org.mycompany.chat.security.jwt.TokenProvider;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.PostConstruct;
 
@@ -47,10 +45,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        JWTFilter customFilter = new JWTFilter(tokenProvider);
         http
 //            .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                     .authenticationEntryPoint(http403ForbiddenEntryPoint())
             .and()
@@ -71,14 +67,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/account/reset-password/finish").permitAll()
 //                .antMatchers("/api/profile-info").permitAll()
                     .antMatchers("/chat/authenticate").permitAll()
-                    .antMatchers("/chat/**").authenticated();
+                    .antMatchers("/chat/**").authenticated()
 //                .antMatchers("/management/health").permitAll()
 //                .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
 //                .antMatchers("/v2/api-docs/**").permitAll()
 //                .antMatchers("/swagger-resources/configuration/ui").permitAll()
 //                .antMatchers("/swagger-ui/index.html").hasAuthority(AuthoritiesConstants.ADMIN)
-//            .and()
-//                .apply(securityConfigurerAdapter());
+            .and()
+                .apply(securityConfigurerAdapter());
 
     }
 

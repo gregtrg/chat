@@ -2,8 +2,8 @@ package org.mycompany.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mycompany.chat.domain.Author;
 import org.mycompany.chat.domain.Authority;
+import org.mycompany.chat.domain.Author;
 import org.mycompany.chat.repository.AuthorRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

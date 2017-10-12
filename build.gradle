@@ -21,6 +21,13 @@ repositories {
     mavenLocal()
     jcenter()
 }
+
+compileJava {
+    options.compilerArgs = [
+        '-Amapstruct.defaultComponentModel=spring',
+    ]
+}
+
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-websocket"
@@ -36,10 +43,12 @@ dependencies {
     compile "org.zalando:problem-spring-web:${problem_spring_web_version}"
     compile "com.zaxxer:HikariCP:${hikaricp_version}"
     compile "org.postgresql:postgresql:${postgresql_version}"
-    compile "org.mapstruct:mapstruct-jdk8:${map_struct_version}", "org.projectlombok:lombok:${lombokVersion}"
+    compile "org.mapstruct:mapstruct-jdk8:${map_struct_version}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
     compile 'com.google.guava:guava:23.1-jre'
 
     apt "org.mapstruct:mapstruct-processor:${map_struct_version}", "org.projectlombok:lombok:${lombokVersion}"
+    apt "org.hibernate:hibernate-jpamodelgen:${hibernate_version}"
 
 //    compileOnly "org.projectlombok:lombok:${lombokVersion}"
 }
