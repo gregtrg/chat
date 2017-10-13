@@ -1,13 +1,13 @@
 package org.mycompany.chat.repository;
 
-import org.mycompany.chat.domain.Author;
+import org.mycompany.chat.domain.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface AuthorRepository extends CrudRepository<Author, Long> {
+public interface UserRepository extends CrudRepository<User, Long> {
 
-    Optional<Author> getAuthorByUsername(String username);
+    Optional<User> getUserByEmail(String email);
 }

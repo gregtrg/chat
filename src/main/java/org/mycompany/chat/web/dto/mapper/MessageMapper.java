@@ -2,20 +2,20 @@ package org.mycompany.chat.web.dto.mapper;
 
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
-import org.mycompany.chat.domain.Author;
 import org.mycompany.chat.domain.Message;
-import org.mycompany.chat.web.dto.AuthorDTO;
+import org.mycompany.chat.domain.User;
 import org.mycompany.chat.web.dto.MessageDTO;
+import org.mycompany.chat.web.dto.UserDTO;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+//@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper
 public interface MessageMapper {
 
     MessageDTO toMessageDto(Message message);
 
     Message toMessage(MessageDTO message);
 
-    AuthorDTO toAuthorDto(Author author);
+    UserDTO toUserDto(User user);
 
-    Author toAuthor(AuthorDTO author);
+    User toUser(UserDTO user);
 }

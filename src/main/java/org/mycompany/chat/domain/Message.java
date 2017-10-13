@@ -1,9 +1,8 @@
 package org.mycompany.chat.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,9 +14,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "message")
 public class Message {
@@ -25,6 +22,7 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "message_id")
     private long id;
 
     private String message;
@@ -32,38 +30,6 @@ public class Message {
     private LocalDateTime messageTime;
 
     @ManyToOne
-    @JoinColumn(name = "id_author")
-    private Author author;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public LocalDateTime getMessageTime() {
-        return messageTime;
-    }
-
-    public void setMessageTime(LocalDateTime messageTime) {
-        this.messageTime = messageTime;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
-    }
+    @JoinColumn(name = "id_user")
+    private User user;
 }

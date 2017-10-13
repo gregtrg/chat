@@ -8,17 +8,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.mycompany.chat.domain.Author;
-import org.mycompany.chat.domain.Authority;
+import org.mycompany.chat.domain.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,23 +40,21 @@ public class TokenProvider {
 
         this.tokenValidityInMilliseconds =
             1_800_000;
-        this.tokenValidityInMillisecondsForRememberMe =
-            1_800_000;
     }
 
-    public String createToken(Author author) {
-        String authorities = author.getAuthorities().stream()
+    public String createToken(User user) {
+        String authorities = user.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
-        Claims claims = Jwts.claims().setSubject(author.getUsername());
-        claims.put(USER_ID, author.getId() + "");
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put(USER_ID, user.getId() + "");
         claims.put(AUTHORITIES_KEY, authorities);
         return Jwts.builder()
-            .setSubject(author.getUsername())
+            .setSubject(user.getUsername())
             .setClaims(claims)
             .signWith(SignatureAlgorithm.HS512, secretKey)
             .setExpiration(validity)
@@ -72,17 +67,13 @@ public class TokenProvider {
             .parseClaimsJws(token)
             .getBody();
 
-        Set<Authority> authorities = Arrays.stream(((String) claims.get(AUTHORITIES_KEY)).split(","))
-            .map(Authority::new)
-            .collect(Collectors.toSet());
-
-        Author user = Author.builder()
-            .username(claims.getSubject())
-            .authorities(authorities)
+        User user = User.builder()
+            .email(claims.getSubject())
+            .authorities((String) claims.get(AUTHORITIES_KEY))
             .id(Long.parseLong((String) claims.get(USER_ID)))
             .build();
 
-        return new UsernamePasswordAuthenticationToken(user, token, authorities);
+        return new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
     }
 
     boolean validateToken(String authToken) {

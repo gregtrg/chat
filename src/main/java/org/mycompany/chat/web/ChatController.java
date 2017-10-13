@@ -38,7 +38,7 @@ public class ChatController {
 
 //    @GetMapping
 //    @ResponseStatus(HttpStatus.OK)
-//    public List<MessageDTO> getMessagesByRoomId(@AuthenticationPrincipal Author user) {
+//    public List<MessageDTO> getMessagesByRoomId(@AuthenticationPrincipal User user) {
 //        return  chatRepository.getMessages().stream()
 //                .map(messageMapper.INSTANCE::messageToMessageDto)
 //            .collect(Collectors.toList());
