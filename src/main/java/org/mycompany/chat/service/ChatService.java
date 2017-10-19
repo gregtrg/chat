@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatService {
 
-    ChatRepository repository;
+    private final ChatRepository repository;
 
     public Message saveMessage(Message message) {
         return repository.save(message);

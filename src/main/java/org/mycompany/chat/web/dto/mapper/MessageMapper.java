@@ -3,7 +3,7 @@ package org.mycompany.chat.web.dto.mapper;
 
 import org.mapstruct.Mapper;
 import org.mycompany.chat.domain.Message;
-import org.mycompany.chat.domain.User;
+import org.mycompany.chat.domain.UserSecurityDetails;
 import org.mycompany.chat.web.dto.MessageDTO;
 import org.mycompany.chat.web.dto.UserDTO;
 
@@ -15,7 +15,7 @@ public interface MessageMapper {
 
     Message toMessage(MessageDTO message);
 
-    UserDTO toUserDto(User user);
+    UserDTO toUserDto(UserSecurityDetails userSecurityDetails);
 
-    User toUser(UserDTO user);
+    UserSecurityDetails toUser(UserDTO user);
 }

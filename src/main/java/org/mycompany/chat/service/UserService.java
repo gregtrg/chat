@@ -1,44 +1,48 @@
 package org.mycompany.chat.service;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mycompany.chat.domain.User;
+import org.mycompany.chat.domain.UserSecurityDetails;
 import org.mycompany.chat.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Locale;
-import java.util.Optional;
-
+import javax.transaction.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+@Transactional
+public class UserService {
 
-    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(final String login) {
-        log.debug("Authenticating {}", login);
-        String lowercaseLogin = login.toLowerCase(Locale.ENGLISH);
-        Optional<User> userFromDatabase = repository.getUserByEmail(lowercaseLogin);
-        return userFromDatabase.orElseThrow(
-            () -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the " +
-                "database"));
+    private final UserRepository userRepository;
+
+
+    public User createUser(String email, String password, String firstName, String lastName) {
+
+        User newUser = User.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .securityDetails(
+                UserSecurityDetails.builder()
+                    .email(email)
+                    .authorities("ROLE_USER")
+                    .password(passwordEncoder.encode("password"))
+                    .build()
+            ).build();
+
+        userRepository.save(newUser);
+        log.debug("Created Information for User: {}", newUser);
+        return newUser;
     }
 
     @PostConstruct
     private void post() {
-        User a = User.builder()
-            .email("lala@mail.com")
-            .password("password")
-            .authorities("ROLE_USER")
-            .build();
-        repository.save(a);
+        createUser("lala@mail.com", "password", "Gri", "Mo");
     }
-
 }
