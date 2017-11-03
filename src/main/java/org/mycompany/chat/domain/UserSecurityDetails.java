@@ -37,10 +37,11 @@ public class UserSecurityDetails implements UserDetails, Serializable {
 
     @NotNull
     @ValidEmail
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotNull
-    @Column(name = "password_hash", length = 60)
+    @Column(name = "password_hash", nullable = false, length = 60)
     private String password;
     private String authorities;
 

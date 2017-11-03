@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.annotation.PostConstruct;
 
@@ -50,10 +53,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                     .authenticationEntryPoint(http403ForbiddenEntryPoint())
             .and()
+                .cors()
+            .and()
                 .csrf()
                     .disable()
-                .headers()
-                    .frameOptions()
+            .headers()
+                .frameOptions()
                         .disable()
             .and()
                 .sessionManagement()
@@ -67,6 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/account/reset-password/finish").permitAll()
 //                .antMatchers("/api/profile-info").permitAll()
                     .antMatchers("/chat/authenticate").permitAll()
+                    .antMatchers("/socket/**").permitAll()
                     .antMatchers("/chat/**").authenticated()
 //                .antMatchers("/management/health").permitAll()
 //                .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
@@ -78,6 +84,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
+        return source;
+    }
 
     //@Bean
     public UserDetailsService userDetailsService() {

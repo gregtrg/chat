@@ -13,11 +13,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Data
@@ -43,6 +46,14 @@ public class User implements Serializable{
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
     private UserSecurityDetails securityDetails;
+
+    @Column(name = "chat")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_chat", joinColumns = {
+        @JoinColumn(name = "id_user", nullable = false, updatable = false) },
+        inverseJoinColumns = { @JoinColumn(name = "id_chat",
+            nullable = false, updatable = false) })
+    private Set<Chat> chats;
 }
 
 

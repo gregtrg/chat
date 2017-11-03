@@ -9,7 +9,6 @@ import org.mycompany.chat.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 @Slf4j
@@ -41,8 +40,8 @@ public class UserService {
         return newUser;
     }
 
-    @PostConstruct
-    private void post() {
-        createUser("lala@mail.com", "password", "Gri", "Mo");
-    }
+//    @PostConstruct
+//    private void post() {
+//        createUser("lala@mail.com", "password", "Gri", "Mo");
+//    }
 }
